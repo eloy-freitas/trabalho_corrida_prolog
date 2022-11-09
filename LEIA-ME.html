@@ -1,0 +1,31 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta chaset='utf-8'>
+    </head>
+<body>
+<pre>
+=== Como executar o servidor ===
+
+Execute o comando: swipl -s servidor.pl (ou abra esse arquivo no swi-prolog)
+Ele já inicia o servidor automaticamente, e exibe a seguinte mensagem:
+   --========================================--
+
+   % Started server at http://localhost:8080/
+
+
+   --========================================--
+Agora então, é só ir ao navegador de internet e acessar o endereço acima.
+A implentação está fornecendo somente um carro que acelera.
+Também alterei os carros do computador para serem aleatórios e para que eles colidissem ao invés de passar um sobre o outro.
+
+Outras informações:
+* Para controlar o carro usando as setas do teclado, modifique o arquivo 'main.js' (linhas 7-10)
+* A criação de mais carros e o tamanho da pista é também definido no 'main.js', linha 3
+* O script em prolog só vai funcionar se todas as regras estiverem certas.
+* Para debugar o servidor, descomente a linha 14 no arquivo 'servidor.pl'
+
+Have fun =)
+</pre>
+</body>
+</html>
