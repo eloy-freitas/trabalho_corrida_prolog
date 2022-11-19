@@ -56,33 +56,82 @@ start :- format('~n~n--========================================--~n~n'),
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 obter_controles([X,Y,ANGLE,S1,S2,S3,S4,S5], [F,Re,L,Ri]) :- 
-    direcao([X,Y,ANGLE,S1,S2,S3,S4,S5], [F,Re,L,Ri]).
+    calcula_sensores([X,Y,ANGLE,S1,S2,S3,S4,S5], [F,Re,L,Ri]).
 
-distanciaPontos(X1, Y1, X2, Y2, Distancia):- 
-    Distancia is sqrt((X1-X2*X1-X2)+(Y1-Y2*Y1-Y2)).
+calcula_sensores([X,Y,ANGLE,S1,S2,S3,S4,S5], [F,Re,L,Ri]) :-
+    Distancia_angulo is abs(ANGLE/(pi*2) - (pi*2)),
+    % Distancia_angulo < abs((pi/2)/(pi*2) - (pi*2)),
+    % Distancia_angulo > abs((pi*3/2)/(pi*2) - (pi*2)),
+    avalia_sensor_esquerda(S1,S2, Sensores_esquerda),
+    avalia_sensor_direita(S4,S5, Sensores_direita),
+    avalia_sensor_frente(S2,S3,S4, Sensores_frente),
+    calcula_acoes(Sensores_frente, Sensores_esquerda, Sensores_direita, [F,Re,L,Ri]).
 
-direcao([X,Y,ANGLE,S1,S2,S3,S4,S5], [1,0,0,0]) :-
-    Centro is S2 + S3 + S4,
-    Centro =< 0.6.
+calcula_acoes(Sensores_frente, Sensores_esquerda, Sensores_direita, [F,Re,L,Ri]) :-
+    Frente is Sensores_frente + Sensores_esquerda + Sensores_direita,
+    Esquerda is Sensores_frente + Sensores_esquerda - Sensores_direita,
+    Direita is Sensores_frente - Sensores_esquerda + Sensores_direita,
+    busca_melhor_acao(Frente, Esquerda, Direita, [F,Re,L,Ri]).
 
-direcao([X,Y,ANGLE,S1,S2,S3,S4,S5], [1,0,0,1]) :-
-    Esquerda is S1 + S2 + S3,
-    Direita is S3 + S4 + S5,
-    Esquerda > Direita.
+busca_melhor_acao(Frente, Esquerda, Direita, [1,0,0,0]) :-
+    Frente =< Esquerda,
+    Frente =< Direita.
 
-direcao([X,Y,ANGLE,S1,S2,S3,S4,S5], [1,0,1,0]) :-
-    Esquerda is S1 + S2 + S3,
-    Direita is S3 + S4 + S5,
-    Esquerda < Direita.
+busca_melhor_acao(Frente, Esquerda, Direita, [1,0,1,0]) :-
+    Esquerda =< Frente,
+    Esquerda =< Direita.
 
-direcao([X,Y,ANGLE,S1,S2,S3,S4,S5], [0,1,0,0]) :-
-    S1 >= 0.6,
-    S2 >= 0.6,
-    S3 >= 0.6,
-    S4 >= 0.6,
-    S5 >= 0.6.
+busca_melhor_acao(Frente, Esquerda, Direita, [1,0,0,1]) :-
+    Direita =< Frente,
+    Direita =< Esquerda.
 
-% direcao([X,Y,ANGLE,S1,S2,S3,S4,S5], [1,0,0,0]) :- 
+avalia_sensor_esquerda(S1,S2, Media) :-
+    Media is (S1 + S2)/2,
+    Media >= 0.6.
+
+avalia_sensor_esquerda(S1,S2, 0) :-
+    Media is (S1 + S2)/2,
+    Media < 0.6.
+
+avalia_sensor_direita(S4,S5, Media) :-
+    Media is (S4 + S5)/2,
+    Media >= 0.6.
+
+avalia_sensor_direita(S4,S5, 0) :-
+    Media is (S4 + S5)/2,
+    Media < 0.6.
+
+avalia_sensor_frente(S2, S3, S4, Media) :-
+    Media is (S2 + S3 +S4)/3.
+
+
+% base
+% menorElemDaLista([H|T], Index) :- 
+%     menorElemDaLista([H|T], Index, H, MenorIndex, 1).
+% 
+% menorElemDaLista([], MenorIndex, _, MenorIndex, _).
+% 
+% menorElemDaLista([H|T], Index, Menor, MenorIndex, Count) :-
+%     H < Menor,
+%     Aux1 is H,
+%     Aux2 is Count + 1,
+%     menorElemDaLista(T, Index, Aux1, Count, Aux2). 
+% 
+% menorElemDaLista([_|T], Index, Menor, MenorIndex, Count) :-
+%     Aux1 is Count + 1,
+%     menorElemDaLista(T, Index, Menor, MenorIndex, Aux1). 
+% 
+% 
+% 
+% reverse_left([X,Y,ANGLE,S1,S2,S3,S4,S5], [0,1,1,0]).
+% 
+% reverse_right([X,Y,ANGLE,S1,S2,S3,S4,S5], [0,1,0,1]).
+% 
+% distanciaPontos(X1, Y1, X2, Y2, Distancia):- 
+%     Distancia is sqrt((X1-X2*X1-X2)+(Y1-Y2*Y1-Y2)).
+
+
+% evalute_state([X,Y,ANGLE,S1,S2,S3,S4,S5], [1,0,0,0]) :- 
 %     ANGLE / pi*2 =:= 0,
 %     S1 >= 0, S1 =< 0.4,
 %     S2 >= 0, S2 =< 0.4,
@@ -90,7 +139,7 @@ direcao([X,Y,ANGLE,S1,S2,S3,S4,S5], [0,1,0,0]) :-
 %     S4 >= 0, S4 =< 0.4,
 %     S5 >= 0, S5 =< 0.4.
 % 
-% direcao([X,Y,ANGLE,S1,S2,S3,S4,S5], [1,0,0,1]) :-
+% evalute_state([X,Y,ANGLE,S1,S2,S3,S4,S5], [1,0,0,1]) :-
 %     ANGLE / pi*2 =:= 0,
 %     S3 >= 0, S3 =< 0.6,
 %     S1 > 0.6,
@@ -98,7 +147,7 @@ direcao([X,Y,ANGLE,S1,S2,S3,S4,S5], [0,1,0,0]) :-
 %     S4 >= 0, S4 =< 0.6,
 %     S5 >= 0, S5 =< 0.6,
 % 
-% direcao([X,Y,ANGLE,S1,S2,S3,S4,S5], [1,0,1,0]) :-
+% evalute_state([X,Y,ANGLE,S1,S2,S3,S4,S5], [1,0,1,0]) :-
 %     ANGLE / pi*2 =:= 0,
 %     S3 >= 0, S3 =< 0.6,
 %     S4 > 0.6, 
@@ -106,7 +155,7 @@ direcao([X,Y,ANGLE,S1,S2,S3,S4,S5], [0,1,0,0]) :-
 %     S1 >= 0, S1 =< 0.6,
 %     S2 >= 0, S2 =< 0.6,
 % 
-% direcao([X,Y,ANGLE,S1,S2,S3,S4,S5], [1,0,0,0]) :-
+% evalute_state([X,Y,ANGLE,S1,S2,S3,S4,S5], [1,0,0,0]) :-
 %     ANGLE / pi*2 >= 0, ANGLE / pi*2 =< (pi*2) + (pi/4),
 %     S3 > 0.6,
 %     S1 > 0.6, 
@@ -114,7 +163,7 @@ direcao([X,Y,ANGLE,S1,S2,S3,S4,S5], [0,1,0,0]) :-
 %     S4 >= 0, S4 =< 0.6,
 %     S5 >= 0, S5 =< 0.6,
 % 
-% direcao([X,Y,ANGLE,S1,S2,S3,S4,S5], [1,0,0,0]) :-
+% evalute_state([X,Y,ANGLE,S1,S2,S3,S4,S5], [1,0,0,0]) :-
 %     ANGLE / pi*2 >= 0, ANGLE / pi*2 =< (pi*2) + (pi/4),
 %     S3 > 0.6,
 %     S4 > 0.6, 
