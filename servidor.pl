@@ -85,24 +85,24 @@ busca_melhor_acao(Frente, Esquerda, Direita, [1,0,0,1]) :-
     Direita =< Frente,
     Direita =< Esquerda.
 
-avalia_sensor_esquerda(S1,S2, Media) :-
-    Media is (S1 + S2)/2,
-    Media >= 0.6.
+avalia_sensor_esquerda(S1,S2, Soma) :-
+    Soma is S1 + S2,
+    Soma >= 0.5.
 
 avalia_sensor_esquerda(S1,S2, 0) :-
-    Media is (S1 + S2)/2,
-    Media < 0.6.
+    Soma is S1 + S2,
+    Soma < 0.5.
 
-avalia_sensor_direita(S4,S5, Media) :-
-    Media is (S4 + S5)/2,
-    Media >= 0.6.
+avalia_sensor_direita(S4,S5, Soma) :-
+    Soma is S4 + S5,
+    Soma >= 0.5.
 
 avalia_sensor_direita(S4,S5, 0) :-
-    Media is (S4 + S5)/2,
-    Media < 0.6.
+    Soma is S4 + S5,
+    Soma < 0.5.
 
-avalia_sensor_frente(S2, S3, S4, Media) :-
-    Media is (S2 + S3 +S4)/3.
+avalia_sensor_frente(S2, S3, S4, Soma) :-
+    Soma is (S2 + S3 + S4)/3.
 
 
 % base
