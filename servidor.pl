@@ -11,8 +11,8 @@
 :- use_module(library(http/http_parameters)).
 :- use_module(library(http/http_dirindex)).
 %DEBUG:
-:- use_module(library(http/http_error)).
-:- debug.
+%:- use_module(library(http/http_error)).
+%:- debug.
 
 % GET
 :- http_handler(
@@ -55,120 +55,95 @@ start :- format('~n~n--========================================--~n~n'),
 :- initialization start.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-obter_controles([X,Y,ANGLE,S1,S2,S3,S4,S5], [F,Re,L,Ri]) :- 
-    calcula_sensores([X,Y,ANGLE,S1,S2,S3,S4,S5], [F,Re,L,Ri]).
+obter_controles([X,Y,ANGLE,S1,S2,S3,S4,S5], [F,R,E,D]) :- qualAcao([S1,S2,S3,S4,S5], [F,R,E,D]).
 
-calcula_sensores([X,Y,ANGLE,S1,S2,S3,S4,S5], [F,Re,L,Ri]) :-
-    Distancia_angulo is abs(ANGLE/(pi*2) - (pi*2)),
-    % Distancia_angulo < abs((pi/2)/(pi*2) - (pi*2)),
-    % Distancia_angulo > abs((pi*3/2)/(pi*2) - (pi*2)),
-    avalia_sensor_esquerda(S1,S2, Sensores_esquerda),
-    avalia_sensor_direita(S4,S5, Sensores_direita),
-    avalia_sensor_frente(S2,S3,S4, Sensores_frente),
-    calcula_acoes(Sensores_frente, Sensores_esquerda, Sensores_direita, [F,Re,L,Ri]).
+naoMembro([],_) :- !.
+naoMembro([H|T],B) :- H \= B,
+	naoMembro(T,B).
 
-calcula_acoes(Sensores_frente, Sensores_esquerda, Sensores_direita, [F,Re,L,Ri]) :-
-    Frente is Sensores_frente + Sensores_esquerda + Sensores_direita,
-    Esquerda is Sensores_frente + Sensores_esquerda - Sensores_direita,
-    Direita is Sensores_frente - Sensores_esquerda + Sensores_direita,
-    busca_melhor_acao(Frente, Esquerda, Direita, [F,Re,L,Ri]).
+qualAcao(SENSORES, ACAO) :-
+	todasAcoes(SENSORES, ACOES),
+	melhorAcao(SENSORES, ACOES, MELHOR),
+	ACAO = MELHOR. 
 
-busca_melhor_acao(Frente, Esquerda, Direita, [1,0,0,0]) :-
-    Frente =< Esquerda,
-    Frente =< Direita.
+todasAcoes([S1,S2,S3,S4,S5], ACOES) :-
+	todasAcoes([S1,S2,S3,S4,S5], ACOES, []).
 
-busca_melhor_acao(Frente, Esquerda, Direita, [1,0,1,0]) :-
-    Esquerda =< Frente,
-    Esquerda =< Direita.
+%passo
+todasAcoes([S1,S2,S3,S4,S5], ACOES, ListAux) :-
+	acao([S1,S2,S3,S4,S5], ACAO),
+	naoMembro(ListAux, ACAO),
+	Aux = [ACAO | ListAux],
+	todasAcoes([S1,S2,S3,S4,S5], ACOES, Aux).
 
-busca_melhor_acao(Frente, Esquerda, Direita, [1,0,0,1]) :-
-    Direita =< Frente,
-    Direita =< Esquerda.
+%base
+todasAcoes(ACAO, ACOES, ACOES) :- !.
 
-avalia_sensor_esquerda(S1,S2, Soma) :-
-    Soma is S1 + S2,
-    Soma >= 0.5.
+avalia([S1,S2,S3,S4,S5], ACAO, PONTUACAO) :- 
+	PONTUACAO is S1*0.1 + S2*0.3 + S3*0.5 + S4*0.3 + S5*0.1.
 
-avalia_sensor_esquerda(S1,S2, 0) :-
-    Soma is S1 + S2,
-    Soma < 0.5.
+melhorAcao(SENSORES, ACOES, MELHOR) :- 
+	melhorAcao(SENSORES, ACOES, MELHOR, [], 0).
 
-avalia_sensor_direita(S4,S5, Soma) :-
-    Soma is S4 + S5,
-    Soma >= 0.5.
+%passo
+melhorAcao(SENSORES, [H|T], MELHOR, AuxMelhor, AuxMelhorPontuacao) :-
+	avalia(SENSORES, H, PONTUACAO),
+	AuxMelhorPontuacao < PONTUACAO,
+	Aux = PONTUACAO,
+	melhorAcao(SENSORES, T, MELHOR, H, Aux).
 
-avalia_sensor_direita(S4,S5, 0) :-
-    Soma is S4 + S5,
-    Soma < 0.5.
+melhorAcao(SENSORES, [H|T], MELHOR, AuxMelhor, AuxMelhorPontuacao) :-
+	avalia(SENSORES, H, PONTUACAO),
+	melhorAcao(SENSORES, T, MELHOR, AuxMelhor, AuxMelhorPontuacao).
 
-avalia_sensor_frente(S2, S3, S4, Soma) :-
-    Soma is (S2 + S3 + S4)/3.
+%base
+melhorAcao(SENSORES, [], MELHOR, MELHOR, _).
 
+acao([S1,S2,S3,S4,S5], ACAO) :-
+	(S2 + S3 + S4)/3 =< 0.45,
+	ACAO = [1,0,0,0].
 
-% base
-% menorElemDaLista([H|T], Index) :- 
-%     menorElemDaLista([H|T], Index, H, MenorIndex, 1).
-% 
-% menorElemDaLista([], MenorIndex, _, MenorIndex, _).
-% 
-% menorElemDaLista([H|T], Index, Menor, MenorIndex, Count) :-
-%     H < Menor,
-%     Aux1 is H,
-%     Aux2 is Count + 1,
-%     menorElemDaLista(T, Index, Aux1, Count, Aux2). 
-% 
-% menorElemDaLista([_|T], Index, Menor, MenorIndex, Count) :-
-%     Aux1 is Count + 1,
-%     menorElemDaLista(T, Index, Menor, MenorIndex, Aux1). 
-% 
-% 
-% 
-% reverse_left([X,Y,ANGLE,S1,S2,S3,S4,S5], [0,1,1,0]).
-% 
-% reverse_right([X,Y,ANGLE,S1,S2,S3,S4,S5], [0,1,0,1]).
-% 
-% distanciaPontos(X1, Y1, X2, Y2, Distancia):- 
-%     Distancia is sqrt((X1-X2*X1-X2)+(Y1-Y2*Y1-Y2)).
+% esquerda
+acao([S1,S2,S3,S4,S5], ACAO) :-
+	S4 + S5 > S1 + S2, 
+    (S4 + S5)/2 > 0.45,
+	ACAO = [1,0,1,0].
 
+% direita
+acao([S1,S2,S3,S4,S5], ACAO) :-
+	S1 + S2 > S4 + S5, 
+    (S1 + S2)/2 > 0.45,
+	ACAO = [1,0,0,1].
 
-% evalute_state([X,Y,ANGLE,S1,S2,S3,S4,S5], [1,0,0,0]) :- 
-%     ANGLE / pi*2 =:= 0,
-%     S1 >= 0, S1 =< 0.4,
-%     S2 >= 0, S2 =< 0.4,
-%     S3 >= 0, S3 =< 0.4,
-%     S4 >= 0, S4 =< 0.4,
-%     S5 >= 0, S5 =< 0.4.
-% 
-% evalute_state([X,Y,ANGLE,S1,S2,S3,S4,S5], [1,0,0,1]) :-
-%     ANGLE / pi*2 =:= 0,
-%     S3 >= 0, S3 =< 0.6,
-%     S1 > 0.6,
-%     S2 > 0.6, 
-%     S4 >= 0, S4 =< 0.6,
-%     S5 >= 0, S5 =< 0.6,
-% 
-% evalute_state([X,Y,ANGLE,S1,S2,S3,S4,S5], [1,0,1,0]) :-
-%     ANGLE / pi*2 =:= 0,
-%     S3 >= 0, S3 =< 0.6,
-%     S4 > 0.6, 
-%     S5 > 0.6,
-%     S1 >= 0, S1 =< 0.6,
-%     S2 >= 0, S2 =< 0.6,
-% 
-% evalute_state([X,Y,ANGLE,S1,S2,S3,S4,S5], [1,0,0,0]) :-
-%     ANGLE / pi*2 >= 0, ANGLE / pi*2 =< (pi*2) + (pi/4),
-%     S3 > 0.6,
-%     S1 > 0.6, 
-%     S2 > 0.6,
-%     S4 >= 0, S4 =< 0.6,
-%     S5 >= 0, S5 =< 0.6,
-% 
-% evalute_state([X,Y,ANGLE,S1,S2,S3,S4,S5], [1,0,0,0]) :-
-%     ANGLE / pi*2 >= 0, ANGLE / pi*2 =< (pi*2) + (pi/4),
-%     S3 > 0.6,
-%     S4 > 0.6, 
-%     S5 > 0.6,
-%     S1 >= 0, S1 =< 0.6,
-%     S2 >= 0, S2 =< 0.6,
-% 
-% 
+% re para esquerda
+acao([S1,S2,S3,S4,S5], ACAO) :-
+    (S3 + S4)/2 > 0.6,
+    (S4 + S5)/2 > 0.7,
+	ACAO = [0,1,0,1].
+
+% re para esquerda
+acao([S1,S2,S3,S4,S5], ACAO) :-
+    (S2 + S3)/2 > 0.5,
+    (S3 + S4)/2 > 0.6,
+    (S4 + S5)/2 > 0.7,
+	ACAO = [0,1,0,1].
+
+% re para direita
+acao([S1,S2,S3,S4,S5], ACAO) :-
+    (S1 + S2)/2 > 0.6,
+    (S2 + S3)/2 > 0.7,
+	ACAO = [0,1,0,1].
+
+% re para direita
+acao([S1,S2,S3,S4,S5], ACAO) :-
+    (S1 + S2)/2 > 0.5,
+    (S2 + S3)/2 > 0.6,
+    (S3 + S4)/2 > 0.7,
+	ACAO = [0,1,0,1].
+
+% re
+acao([S1,S2,S3,S4,S5], ACAO) :-
+    S2 > 0.7,
+    S3 > 0.7,
+	S4 > 0.7,
+	ACAO = [0,1,0,0].
