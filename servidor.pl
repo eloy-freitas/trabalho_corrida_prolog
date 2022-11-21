@@ -55,7 +55,7 @@ start :- format('~n~n--========================================--~n~n'),
 :- initialization start.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-obter_controles([X,Y,ANGLE,S1,S2,S3,S4,S5], [F,R,E,D]) :- qualAcao([S1,S2,S3,S4,S5], [F,R,E,D]).
+obter_controles([X,Y,ANGLE,S1,S2,S3,S4,S5], [F,R,E,D]) :- qualAcao([X,Y,ANGLE,S1,S2,S3,S4,S5], [F,R,E,D]).
 
 naoMembro([],_) :- !.
 naoMembro([H|T],B) :- H \= B,
@@ -66,20 +66,20 @@ qualAcao(SENSORES, ACAO) :-
 	melhorAcao(SENSORES, ACOES, MELHOR),
 	ACAO = MELHOR. 
 
-todasAcoes([S1,S2,S3,S4,S5], ACOES) :-
-	todasAcoes([S1,S2,S3,S4,S5], ACOES, []).
+todasAcoes([X,Y,ANGLE,S1,S2,S3,S4,S5], ACOES) :-
+	todasAcoes([X,Y,ANGLE,S1,S2,S3,S4,S5], ACOES, []).
 
 %passo
-todasAcoes([S1,S2,S3,S4,S5], ACOES, ListAux) :-
-	acao([S1,S2,S3,S4,S5], ACAO),
+todasAcoes([X,Y,ANGLE,S1,S2,S3,S4,S5], ACOES, ListAux) :-
+	acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO),
 	naoMembro(ListAux, ACAO),
 	Aux = [ACAO | ListAux],
-	todasAcoes([S1,S2,S3,S4,S5], ACOES, Aux).
+	todasAcoes([X,Y,ANGLE,S1,S2,S3,S4,S5], ACOES, Aux).
 
 %base
 todasAcoes(ACAO, ACOES, ACOES) :- !.
 
-avalia([S1,S2,S3,S4,S5], ACAO, PONTUACAO) :- 
+avalia([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO, PONTUACAO) :- 
 	PONTUACAO is S1*0.1 + S2*0.3 + S3*0.5 + S4*0.3 + S5*0.1.
 
 melhorAcao(SENSORES, ACOES, MELHOR) :- 
@@ -99,52 +99,52 @@ melhorAcao(SENSORES, [H|T], MELHOR, AuxMelhor, AuxMelhorPontuacao) :-
 %base
 melhorAcao(SENSORES, [], MELHOR, MELHOR, _).
 
-acao([S1,S2,S3,S4,S5], ACAO) :-
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
 	(S2 + S3 + S4)/3 =< 0.45,
 	ACAO = [1,0,0,0].
 
 % esquerda
-acao([S1,S2,S3,S4,S5], ACAO) :-
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
 	S4 + S5 > S1 + S2, 
     S4 >= 0.40,
     S5 >= 0.45,
 	ACAO = [1,0,1,0].
 
 % direita
-acao([S1,S2,S3,S4,S5], ACAO) :-
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
 	S1 + S2 > S4 + S5, 
     S2 >= 0.40,
     S1 >= 0.45,
 	ACAO = [1,0,0,1].
 
 % re para esquerda
-acao([S1,S2,S3,S4,S5], ACAO) :-
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
     S3 + S4 > 0.65,
     S4 + S5 > 0.75,
 	ACAO = [0,1,0,1].
 
 % re para esquerda
-acao([S1,S2,S3,S4,S5], ACAO) :-
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
     S2 + S3 > 0.55,
     S3 + S4 > 0.65,
     S4 + S5 > 0.75,
 	ACAO = [0,1,0,1].
 
 % re para direita
-acao([S1,S2,S3,S4,S5], ACAO) :-
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
     S1 + S2 > 0.65,
     S2 + S3 > 0.75,
 	ACAO = [0,1,0,1].
 
 % re para direita
-acao([S1,S2,S3,S4,S5], ACAO) :-
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
     S1 + S2 > 0.55,
     S2 + S3 > 0.65,
     S3 + S4 > 0.75,
 	ACAO = [0,1,0,1].
 
 % re
-acao([S1,S2,S3,S4,S5], ACAO) :-
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
     S2 > 0.75,
     S3 > 0.75,
 	S4 > 0.75,
