@@ -55,7 +55,6 @@ start :- format('~n~n--========================================--~n~n'),
 :- initialization start.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 obter_controles([X,Y,ANGLE,S1,S2,S3,S4,S5], [F,R,E,D]) :- qualAcao([S1,S2,S3,S4,S5], [F,R,E,D]).
 
 naoMembro([],_) :- !.
@@ -80,7 +79,6 @@ todasAcoes([S1,S2,S3,S4,S5], ACOES, ListAux) :-
 %base
 todasAcoes(ACAO, ACOES, ACOES) :- !.
 
-
 avalia([S1,S2,S3,S4,S5], ACAO, PONTUACAO) :- 
 	PONTUACAO is S1*0.1 + S2*0.3 + S3*0.5 + S4*0.3 + S5*0.1.
 
@@ -98,96 +96,63 @@ melhorAcao(SENSORES, [H|T], MELHOR, AuxMelhor, AuxMelhorPontuacao) :-
 	avalia(SENSORES, H, PONTUACAO),
 	melhorAcao(SENSORES, T, MELHOR, AuxMelhor, AuxMelhorPontuacao).
 
-
-
 %base
 melhorAcao(SENSORES, [], MELHOR, MELHOR, _).
 
 acao([S1,S2,S3,S4,S5], ACAO) :-
-	S3 < 0.51,
+	(S2 + S3 + S4)/3 =< 0.45,
 	ACAO = [1,0,0,0].
 
+% esquerda
 acao([S1,S2,S3,S4,S5], ACAO) :-
-	S1 > 0.4,
-	S2 > 0.4,
-	ACAO = [1,0,0,1].
-
-acao([S1,S2,S3,S4,S5], ACAO) :-
-	S4 > 0.4,
-	S5 > 0.4,
-	ACAO = [1,0,0,1].
-
-acao([S1,S2,S3,S4,S5], ACAO) :-
-	S1 > 0.65,
-	S2 > 0.65,
-	S3 > 0.65,
-	S4 < 0.7,
-	S5 < 0.7,
+	S4 + S5 > S1 + S2, 
+    S4 >= 0.40,
+    S5 >= 0.45,
 	ACAO = [1,0,1,0].
 
+% direita
 acao([S1,S2,S3,S4,S5], ACAO) :-
-	S1 > 0.7,
-	S2 > 0.7,
-	S3 > 0.7,
-	S4 < 0.7,
-	S5 < 0.7,
-	ACAO = [0,1,1,0].
+	S1 + S2 > S4 + S5, 
+    S2 >= 0.40,
+    S1 >= 0.45,
+	ACAO = [1,0,0,1].
 
+% re para esquerda
 acao([S1,S2,S3,S4,S5], ACAO) :-
-	S1 < 0.7,
-	S2 < 0.7,
-	S3 > 0.65,
-	S4 > 0.65,
-	S5 > 0.65,
-	ACAO = [1,0,1,0].
-
-acao([S1,S2,S3,S4,S5], ACAO) :-
-	S1 < 0.7,
-	S2 < 0.7,
-	S3 > 0.7,
-	S4 > 0.7,
-	S5 > 0.7,
+    S3 + S4 > 0.65,
+    S4 + S5 > 0.75,
 	ACAO = [0,1,0,1].
 
+% re para esquerda
 acao([S1,S2,S3,S4,S5], ACAO) :-
-	S1 > 0.7,
-	S2 > 0.7,
-	S3 > 0.7,
-	S4 > 0.7,
-	S5 > 0.7,
+    S2 + S3 > 0.55,
+    S3 + S4 > 0.65,
+    S4 + S5 > 0.75,
+	ACAO = [0,1,0,1].
+
+% re para direita
+acao([S1,S2,S3,S4,S5], ACAO) :-
+    S1 + S2 > 0.65,
+    S2 + S3 > 0.75,
+	ACAO = [0,1,0,1].
+
+% re para direita
+acao([S1,S2,S3,S4,S5], ACAO) :-
+    S1 + S2 > 0.55,
+    S2 + S3 > 0.65,
+    S3 + S4 > 0.75,
+	ACAO = [0,1,0,1].
+
+% re
+acao([S1,S2,S3,S4,S5], ACAO) :-
+    S2 > 0.75,
+    S3 > 0.75,
+	S4 > 0.75,
 	ACAO = [0,1,0,0].
 
+% re
 acao([S1,S2,S3,S4,S5], ACAO) :-
-	S2 > 0.13,
-	S4 > 0.5,
-	ACAO = [1,0,1,0].
-
-acao([S1,S2,S3,S4,S5], ACAO) :-
-	S1 > 0.5,
-	S2 > 0.5,
-	ACAO = [1,0,0,1].
-
-acao([S1,S2,S3,S4,S5], ACAO) :-
-	S2 > 0.13,
-	S4 > 0.5,
-	ACAO = [1,0,1,0].
-
-acao([S1,S2,S3,S4,S5], ACAO) :-
-	S2 > 0.6,
-	ACAO = [1,0,0,1].
-
-acao([S1,S2,S3,S4,S5], ACAO) :-
-	S4 > 0.6,
-	ACAO = [1,0,1,0].
-
-acao([S1,S2,S3,S4,S5], ACAO) :-
-	S1 > 0.6,
-	ACAO = [1,0,0,1].
-
-acao([S1,S2,S3,S4,S5], ACAO) :-
-	S5 > 0.6,
-	ACAO = [1,0,1,0].
-
-acao([S1,S2,S3,S4,S5], ACAO) :-
-	S3 > 0.6,
+    S2 > 0.75,
+    S3 > 0.75,
+	S4 > 0.75,
 	ACAO = [0,1,0,0].
