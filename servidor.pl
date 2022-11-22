@@ -100,48 +100,116 @@ melhorAcao(SENSORES, [H|T], MELHOR, AuxMelhor, AuxMelhorPontuacao) :-
 melhorAcao(SENSORES, [], MELHOR, MELHOR, _).
 
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
-	(S2 + S3 + S4)/3 =< 0.45,
+	S1 < 0.8,
+    S2 < 0.5,
+    S3 < 0.4,
+    S4 < 0.5,
+    S5 < 0.8,
 	ACAO = [1,0,0,0].
 
 % esquerda
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
-	S4 + S5 > S1 + S2, 
-    S4 >= 0.40,
-    S5 >= 0.45,
+    S4 >= 0.5,
+    S4 < 0.75,
+    S5 >= 0.5,
+    S5 < 0.75,
+    S1 + S2 < S4 + S5, 
+	ACAO = [1,0,1,0].
+
+% esquerda
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
+    S4 >= 0.5,
+    S4 < 0.75,
+    S5 >= 0.5,
+    S5 < 0.75,
+    S3 + S2 < S4 + S5, 
+	ACAO = [1,0,1,0].
+
+% esquerda
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
+    S4 >= 0.5,
+    S4 < 0.75,
+    S3 >= 0.5,
+    S3 < 0.75,
+    S3 + S2 < S3 + S4, 
+	ACAO = [1,0,1,0].
+
+% esquerda
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
+    S4 >= 0.5,
+    S4 < 0.75,
+    S3 >= 0.5,
+    S3 < 0.75,
+    S1 + S2 < S3 + S4, 
+	ACAO = [1,0,1,0].
+
+% esquerda
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
+    S3 >= 0.5,
+    S3 < 0.75,
+    S4 >= 0.5,
+    S4 < 0.75,
+    S5 >= 0.5,
+    S5 < 0.75,
+    S1 + S2 + S3 < S3 + S4 + S5, 
 	ACAO = [1,0,1,0].
 
 % direita
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
-	S1 + S2 > S4 + S5, 
-    S2 >= 0.40,
     S1 >= 0.45,
+    S1 < 0.75,
+    S2 >= 0.45,
+    S2 < 0.75,
+    S3 + S4 < S1 + S2, 
 	ACAO = [1,0,0,1].
 
-% re para esquerda
+% direita
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
-    S3 + S4 > 0.65,
-    S4 + S5 > 0.75,
-	ACAO = [0,1,0,1].
+    S1 >= 0.45,
+    S1 < 0.75,
+    S2 >= 0.45,
+    S2 < 0.75,
+    S4 + S5 < S1 + S2, 
+	ACAO = [1,0,0,1].
 
-% re para esquerda
+% direita
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
-    S2 + S3 > 0.55,
-    S3 + S4 > 0.65,
-    S4 + S5 > 0.75,
-	ACAO = [0,1,0,1].
+    S2 >= 0.45,
+    S2 < 0.75,
+    S3 >= 0.45,
+    S3 < 0.75,
+    S3 + S4 < S2 + S3, 
+	ACAO = [1,0,0,1].
 
-% re para direita
+% direita
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
-    S1 + S2 > 0.65,
-    S2 + S3 > 0.75,
-	ACAO = [0,1,0,1].
+    S2 >= 0.45,
+    S2 < 0.75,
+    S3 >= 0.45,
+    S3 < 0.75,
+    S4 + S5 < S2 + S3, 
+	ACAO = [1,0,0,1].
 
-% re para direita
+% direita
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
-    S1 + S2 > 0.55,
-    S2 + S3 > 0.65,
-    S3 + S4 > 0.75,
-	ACAO = [0,1,0,1].
+    S1 >= 0.45,
+    S1 < 0.75,
+    S2 >= 0.45,
+    S2 < 0.75,
+    S3 >= 0.45,
+    S3 < 0.75,
+    S3 + S4 + S5 < S1 + S2 + S3, 
+	ACAO = [1,0,0,1].
+
+%% re para esquerda
+%acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
+%    S2 + S3 >= 0.75,
+%	ACAO = [0,1,1,0].
+%
+%% re para esquerda
+%acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
+%    S3 + S4 >= 0.75,
+%	ACAO = [0,1,0,1].
 
 % re
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
@@ -149,3 +217,6 @@ acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
     S3 > 0.75,
 	S4 > 0.75,
 	ACAO = [0,1,0,0].
+	
+    
+% http://localhost:8080/action?s1=0.7020670527338634&s2=0.8141394058422182&s3=0.8282872011572386&s4=0&s5=0.273793940822295&x=77.5&y=-434.4310571340031&angle=0
