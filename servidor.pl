@@ -79,11 +79,17 @@ todasAcoes([X,Y,ANGLE,S1,S2,S3,S4,S5], ACOES, ListAux) :-
 %base
 todasAcoes(ACAO, ACOES, ACOES) :- !.
 
-avalia([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO, PONTUACAO) :- 
-	PONTUACAO is S1*0.1 + S2*0.3 + S3*0.5 + S4*0.3 + S5*0.1.
+avalia([X,Y,ANGLE,S1,S2,S3,S4,S5], [F,R,E,D], PONTUACAO) :- 
+	PONTUACAO is (
+        0.9*F*S3 + 0.3*R
+        + (-0.4*E + 0.2*D + 0.1*R)*S1 
+        + (-0.8*E + 0.4*D + 0.2*R)*S2 
+        + (-0.8*D + 0.4*E + 0.2*R)*S4
+        + (-0.4*D + 0.2*E + 0.1*R)*S5
+    ).
 
 melhorAcao(SENSORES, ACOES, MELHOR) :- 
-	melhorAcao(SENSORES, ACOES, MELHOR, [], 0).
+	melhorAcao(SENSORES, ACOES, MELHOR, [], -9999).
 
 %passo
 melhorAcao(SENSORES, [H|T], MELHOR, AuxMelhor, AuxMelhorPontuacao) :-
@@ -100,7 +106,8 @@ melhorAcao(SENSORES, [H|T], MELHOR, AuxMelhor, AuxMelhorPontuacao) :-
 melhorAcao(SENSORES, [], MELHOR, MELHOR, _).
 
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
-    sin(ANGLE) =:= 0,
+    %sin(ANGLE) < sin(pi/20),
+    %sin(ANGLE) > sin(pi/20),
     S2 < 0.5,
     S3 < 0.5,
     S4 < 0.5,
@@ -108,41 +115,41 @@ acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
 
 % esquerda
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
-    S3 < 0.5,
-    sin(ANGLE) < 0, 
+    S3 <= 0.5,
+    sin(ANGLE) =< -3/2, 
 	ACAO = [1,0,1,0].
 
 % direita
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
-    S3 < 0.5,
-    sin(ANGLE) > 0, 
+    S3 <= 0.5,
+    sin(ANGLE) > 3/2, 
 	ACAO = [1,0,0,1].
 
 % esquerda
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
     S4 + S5 >= 0.5,
-    S4 + S5 < 1.1,
+    S4 + S5 < 1.5,
     S1 + S2 < S4 + S5, 
 	ACAO = [1,0,1,0].
 
 % esquerda
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
     S4 + S5 >= 0.5,
-    S4 + S5 < 1.1,
+    S4 + S5 < 1.5,
     S3 + S2 < S4 + S5, 
 	ACAO = [1,0,1,0].
 
 % esquerda
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
     S4 + S3 >= 0.5,
-    S4 + S3 < 1.1,
+    S4 + S3 < 1.5,
     S3 + S2 < S3 + S4, 
 	ACAO = [1,0,1,0].
 
 % esquerda
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
     S4 + S3 >= 0.5,
-    S4 + S3 < 1.1,
+    S4 + S3 < 1.5,
     S1 + S2 < S3 + S4, 
 	ACAO = [1,0,1,0].
 
@@ -160,28 +167,28 @@ acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
 % direita
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
     S1 + S2 >= 0.5,
-    S1 + S2 < 1.1,
+    S1 + S2 < 1.5,
     S3 + S4 < S1 + S2, 
 	ACAO = [1,0,0,1].
 
 % direita
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
     S1 + S2 >= 0.5,
-    S1 + S2 < 1.1,
+    S1 + S2 < 1.5,
     S4 + S5 < S1 + S2, 
 	ACAO = [1,0,0,1].
 
 % direita
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
     S3 + S2 >= 0.5,
-    S3 + S2 < 1.1,
+    S3 + S2 < 1.5,
     S3 + S4 < S2 + S3, 
 	ACAO = [1,0,0,1].
 
 % direita
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
     S3 + S2 >= 0.5,
-    S3 + S2 < 1.1,
+    S3 + S2 < 1.5,
     S4 + S5 < S2 + S3, 
 	ACAO = [1,0,0,1].
 
