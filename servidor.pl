@@ -100,12 +100,23 @@ melhorAcao(SENSORES, [H|T], MELHOR, AuxMelhor, AuxMelhorPontuacao) :-
 melhorAcao(SENSORES, [], MELHOR, MELHOR, _).
 
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
-	S1 < 0.8,
+    sin(ANGLE) =:= 0,
     S2 < 0.5,
     S3 < 0.5,
     S4 < 0.5,
-    S5 < 0.8,
 	ACAO = [1,0,0,0].
+
+% esquerda
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
+    S3 < 0.5,
+    sin(ANGLE) < 0, 
+	ACAO = [1,0,1,0].
+
+% direita
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
+    S3 < 0.5,
+    sin(ANGLE) > 0, 
+	ACAO = [1,0,0,1].
 
 % esquerda
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
