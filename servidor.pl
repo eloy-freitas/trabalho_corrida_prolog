@@ -81,11 +81,11 @@ todasAcoes(ACAO, ACOES, ACOES) :- !.
 
 avalia([X,Y,ANGLE,S1,S2,S3,S4,S5], [F,R,E,D], PONTUACAO) :- 
 	PONTUACAO is (
-        0.9*F*S3 + 0.3*R
-        + (-0.4*E + 0.2*D + 0.1*R)*S1 
-        + (-0.8*E + 0.4*D + 0.2*R)*S2 
-        + (-0.8*D + 0.4*E + 0.2*R)*S4
-        + (-0.4*D + 0.2*E + 0.1*R)*S5
+        (0.9*F + 0.3*R)*S3
+        + (-0.5*E + 0.3*D + 0.1*R)*S1 
+        + (-0.7*E + 0.5*D + 0.2*R)*S2 
+        + (-0.7*D + 0.5*E + 0.2*R)*S4
+        + (-0.5*D + 0.3*E + 0.1*R)*S5
     ).
 
 melhorAcao(SENSORES, ACOES, MELHOR) :- 
