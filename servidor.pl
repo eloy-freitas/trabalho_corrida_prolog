@@ -80,6 +80,10 @@ todasAcoes([X,Y,ANGLE,S1,S2,S3,S4,S5], ACOES, ListAux) :-
 todasAcoes(ACAO, ACOES, ACOES) :- !.
 
 avalia([X,Y,ANGLE,S1,S2,S3,S4,S5], [F,R,E,D], PONTUACAO) :- 
+    cos(ANGLE) < 0.3,
+	PONTUACAO is 9999999999999.
+
+avalia([X,Y,ANGLE,S1,S2,S3,S4,S5], [F,R,E,D], PONTUACAO) :- 
 	PONTUACAO is (
         (0.9*F + 0.3*R)*S3
         + (-0.5*E + 0.3*D + 0.1*R)*S1 
@@ -163,6 +167,11 @@ acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
     S5 < 0.75,
     S1 + S2 + S3 < S3 + S4 + S5, 
 	ACAO = [1,0,1,0].
+
+
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
+    cos(ANGLE) < 0.3,
+    ACAO = [0,1,1,0].
 
 % direita
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
