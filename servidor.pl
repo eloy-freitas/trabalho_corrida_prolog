@@ -85,7 +85,7 @@ avalia([X,Y,ANGLE,S1,S2,S3,S4,S5], [F,R,E,D], PONTUACAO) :-
 
 avalia([X,Y,ANGLE,S1,S2,S3,S4,S5], [F,R,E,D], PONTUACAO) :- 
 	PONTUACAO is (
-        (0.9*F + 0.3*R)*S3
+        (0.9*F + 0.3*R)
         + (-0.5*E + 0.3*D + 0.1*R)*S1 
         + (-0.7*E + 0.5*D + 0.2*R)*S2 
         + (-0.7*D + 0.5*E + 0.2*R)*S4
@@ -117,14 +117,14 @@ acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
 
 % esquerda
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
-    S4 + S5 >= 0.45,
+    S4 + S5 >= 0.35,
     S4 + S5 < 1.55,
     S1 + S2 < S4 + S5, 
 	ACAO = [1,0,1,0].
 
 % esquerda
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
-    S4 + S5 >= 0.45,
+    S4 + S5 >= 0.35,
     S4 + S5 < 1.55,
     S3 + S2 < S4 + S5, 
 	ACAO = [1,0,1,0].
@@ -149,14 +149,14 @@ acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
 
 % direita
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
-    S1 + S2 >= 0.45,
+    S1 + S2 >= 0.35,
     S1 + S2 < 1.55,
     S3 + S4 < S1 + S2, 
 	ACAO = [1,0,0,1].
 
 % direita
 acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
-    S1 + S2 >= 0.45,
+    S1 + S2 >= 0.35,
     S1 + S2 < 1.55,
     S4 + S5 < S1 + S2, 
 	ACAO = [1,0,0,1].
