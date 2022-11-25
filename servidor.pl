@@ -55,4 +55,152 @@ start :- format('~n~n--========================================--~n~n'),
 :- initialization start.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-obter_controles([X,Y,ANGLE,S1,S2,S3,S4,S5], [1,0,0,0]).
+obter_controles([X,Y,ANGLE,S1,S2,S3,S4,S5], [F,R,E,D]) :- qualAcao([X,Y,ANGLE,S1,S2,S3,S4,S5], [F,R,E,D]).
+
+naoMembro([],_) :- !.
+naoMembro([H|T],B) :- H \= B,
+	naoMembro(T,B).
+
+qualAcao(SENSORES, ACAO) :-
+	todasAcoes(SENSORES, ACOES),
+	melhorAcao(SENSORES, ACOES, MELHOR),
+	ACAO = MELHOR. 
+
+todasAcoes([X,Y,ANGLE,S1,S2,S3,S4,S5], ACOES) :-
+	todasAcoes([X,Y,ANGLE,S1,S2,S3,S4,S5], ACOES, []).
+
+%passo
+todasAcoes([X,Y,ANGLE,S1,S2,S3,S4,S5], ACOES, ListAux) :-
+	acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO),
+	naoMembro(ListAux, ACAO),
+	Aux = [ACAO | ListAux],
+	todasAcoes([X,Y,ANGLE,S1,S2,S3,S4,S5], ACOES, Aux).
+
+%base
+todasAcoes(ACAO, ACOES, ACOES) :- !.
+
+avalia([X,Y,ANGLE,S1,S2,S3,S4,S5], [F,R,E,D], PONTUACAO) :- 
+    cos(ANGLE) < 0.3,
+	PONTUACAO is 9999999999999.
+
+avalia([X,Y,ANGLE,S1,S2,S3,S4,S5], [F,R,E,D], PONTUACAO) :- 
+	PONTUACAO is (
+        (0.9*F + 0.3*R)
+        + (-0.5*E + 0.3*D + 0.1*R)*S1 
+        + (-0.7*E + 0.5*D + 0.2*R)*S2 
+        + (-0.7*D + 0.5*E + 0.2*R)*S4
+        + (-0.5*D + 0.3*E + 0.1*R)*S5
+    ).
+
+melhorAcao(SENSORES, ACOES, MELHOR) :- 
+	melhorAcao(SENSORES, ACOES, MELHOR, [], -9999).
+
+%passo
+melhorAcao(SENSORES, [H|T], MELHOR, AuxMelhor, AuxMelhorPontuacao) :-
+	avalia(SENSORES, H, PONTUACAO),
+	AuxMelhorPontuacao < PONTUACAO,
+	Aux = PONTUACAO,
+	melhorAcao(SENSORES, T, MELHOR, H, Aux).
+
+melhorAcao(SENSORES, [H|T], MELHOR, AuxMelhor, AuxMelhorPontuacao) :-
+	avalia(SENSORES, H, PONTUACAO),
+	melhorAcao(SENSORES, T, MELHOR, AuxMelhor, AuxMelhorPontuacao).
+
+%base
+melhorAcao(SENSORES, [], MELHOR, MELHOR, _).
+
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
+    S2 < 0.45,
+    S3 < 0.35,
+    S4 < 0.45,
+	ACAO = [1,0,0,0].
+
+% esquerda
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
+    S4 + S5 >= 0.35,
+    S4 + S5 < 1.55,
+    S1 + S2 < S4 + S5, 
+	ACAO = [1,0,1,0].
+
+% esquerda
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
+    S4 + S5 >= 0.35,
+    S4 + S5 < 1.55,
+    S3 + S2 < S4 + S5, 
+	ACAO = [1,0,1,0].
+
+% esquerda
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
+    S4 + S3 >= 0.35,
+    S4 + S3 < 1.55,
+    S3 + S2 < S3 + S4, 
+	ACAO = [1,0,1,0].
+
+% esquerda
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
+    S4 + S3 >= 0.35,
+    S4 + S3 < 1.55,
+    S1 + S2 < S3 + S4, 
+	ACAO = [1,0,1,0].
+
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
+    cos(ANGLE) < 0.3,
+    ACAO = [0,1,1,0].
+
+% direita
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
+    S1 + S2 >= 0.35,
+    S1 + S2 < 1.55,
+    S3 + S4 < S1 + S2, 
+	ACAO = [1,0,0,1].
+
+% direita
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
+    S1 + S2 >= 0.35,
+    S1 + S2 < 1.55,
+    S4 + S5 < S1 + S2, 
+	ACAO = [1,0,0,1].
+
+% direita
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
+    S3 + S2 >= 0.35,
+    S3 + S2 < 1.55,
+    S3 + S4 < S2 + S3, 
+	ACAO = [1,0,0,1].
+
+% direita
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
+    S3 + S2 >= 0.35,
+    S3 + S2 < 1.55,
+    S4 + S5 < S2 + S3, 
+	ACAO = [1,0,0,1].
+
+% re para esquerda
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
+    S2 + S3 >= 1.55,
+	ACAO = [0,1,1,0].
+
+% re para esquerda
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
+    S1 + S2 >= 1.55,
+	ACAO = [0,1,1,0].
+
+% re para direita
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
+    S4 + S5 >= 1.55,
+	ACAO = [0,1,0,1].
+
+% re para direita
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
+    S3 + S4 >= 1.55,
+	ACAO = [0,1,0,1].
+
+
+% re
+acao([X,Y,ANGLE,S1,S2,S3,S4,S5], ACAO) :-
+    S2 >= 0.8,
+    S3 >= 0.8,
+	S4 >= 0.8,
+	ACAO = [0,1,0,0].
+	
+    
